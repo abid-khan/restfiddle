@@ -25,18 +25,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.restfiddle.security.RFUserDetailService;
+import com.restfiddle.security.RfUserDetailService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private RFUserDetailService userDetailService;
+    private RfUserDetailService userDetailService;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-	// auth.inMemoryAuthentication().withUser("rf").password("rf").roles("USER");
 	auth.userDetailsService(userDetailService).passwordEncoder(this.passwordEncoder());
     }
 
@@ -47,7 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected void configure(HttpSecurity http) throws Exception {
 	http.csrf().disable();
-	http.authorizeRequests().antMatchers("/api/**", "/about").permitAll().anyRequest().authenticated().and().formLogin().and().httpBasic();
+	http.authorizeRequests().antMatchers("/api/**", "/about").permitAll().anyRequest().authenticated().and().formLogin().loginPage("/login")
+		.failureUrl("/login?error").permitAll();
 	http.logout().logoutSuccessUrl("/");
     }
 }
